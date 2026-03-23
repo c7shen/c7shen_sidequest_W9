@@ -302,6 +302,13 @@ function draw() {
   // 1) decide boar vel/turns using probes
   updateBoars();
 
+  // --- DEBUG: force probe visibility every frame ---
+  for (const e of boar) {
+    if (e.footProbe) e.footProbe.visible = debugOptions.showProbes;
+    if (e.frontProbe) e.frontProbe.visible = debugOptions.showProbes;
+    if (e.groundProbe) e.groundProbe.visible = debugOptions.showProbes;
+  }
+
   // 2) then let physics apply vel.x / gravity
   world.step();
 
