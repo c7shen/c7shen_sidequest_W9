@@ -297,9 +297,7 @@ function draw() {
   // apply debug features
   allSprites.debug = debugOptions.showColliders;
 
-  if (debugOptions.forceWin) {
-    won = true;
-  }
+  let debugWinActive = debugOptions.forceWin;
 
   // 1) decide boar vel/turns using probes
   updateBoars();
@@ -390,7 +388,7 @@ function draw() {
   }
 
   // --- PLAYER MOVEMENT ---
-  if (dead || won) {
+  if (dead || (won && !debugWinActive)) {
     player.vel.x = 0;
   } else if (knockTimer > 0) {
     // no control during knockback
@@ -515,8 +513,8 @@ function draw() {
   camera.on();
 
   // display a death or win overlay if those events happen
-  if (dead) drawDeathOverlay();
-  if (won) drawWinOverlay();
+  if (dead && !debugWinActive) drawDeathOverlay();
+  if (won || debugWinActive) drawWinOverlay();
 
   // accept R to restart the game if player wins or dies
   if ((dead || won) && kb.presses("r")) restartGame();
@@ -706,6 +704,11 @@ function tryHitBoar() {
   const playerFeetY = player.y + player.h / 2;
 
   for (const e of boar) {
+    // --- DEBUG: toggle probe visibility every frame ---
+    if (e.footProbe) e.footProbe.visible = debugOptions.showProbes;
+    if (e.frontProbe) e.frontProbe.visible = debugOptions.showProbes;
+    if (e.groundProbe) e.groundProbe.visible = debugOptions.showProbes;
+
     if (e.dead || e.dying) continue;
 
     const dx = e.x - player.x;
