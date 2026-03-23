@@ -23,6 +23,16 @@
       = empty (no sprite)
 */
 
+// --- DEBUG SYSTEM ---
+let debugMode = false;
+
+let debugOptions = {
+  showProbes: false,
+  showColliders: false,
+  invincible: false,
+  forceWin: false,
+};
+
 let player, sensor;
 let playerImg;
 
@@ -270,6 +280,27 @@ function setup() {
 function draw() {
   background(69, 61, 79);
 
+  // --- DEBUG TOGGLE ---
+  if (kb.presses("tab")) {
+    debugMode = !debugMode;
+  }
+
+  // --- DEBUG CONTROLS ---
+  if (debugMode) {
+    if (kb.presses("1")) debugOptions.showProbes = !debugOptions.showProbes;
+    if (kb.presses("2"))
+      debugOptions.showColliders = !debugOptions.showColliders;
+    if (kb.presses("3")) debugOptions.invincible = !debugOptions.invincible;
+    if (kb.presses("4")) debugOptions.forceWin = !debugOptions.forceWin;
+  }
+
+  // apply debug features
+  allSprites.debug = debugOptions.showColliders;
+
+  if (debugOptions.forceWin) {
+    won = true;
+  }
+
   // 1) decide boar vel/turns using probes
   updateBoars();
 
@@ -489,6 +520,10 @@ function draw() {
 
   // accept R to restart the game if player wins or dies
   if ((dead || won) && kb.presses("r")) restartGame();
+
+  if (debugMode) {
+    drawDebugMenu();
+  }
 }
 
 function applyIntegerScale() {
@@ -531,6 +566,30 @@ function drawBitmapTextToGfx(g, str, x, y, scale = FONT_SCALE) {
       CELL,
     );
   }
+}
+
+function drawDebugMenu() {
+  camera.off();
+
+  push();
+  noStroke();
+  fill(0, 180);
+  rect(20, 20, 260, 140, 8);
+
+  fill("#ffffff");
+  textSize(12);
+  textFont("monospace");
+
+  text("DEBUG MENU", 30, 40);
+
+  text(`1. Probes: ${debugOptions.showProbes ? "ON" : "OFF"}`, 30, 60);
+  text(`2. Colliders: ${debugOptions.showColliders ? "ON" : "OFF"}`, 30, 75);
+  text(`3. Invincible: ${debugOptions.invincible ? "ON" : "OFF"}`, 30, 90);
+  text(`4. Force Win: ${debugOptions.forceWin ? "ON" : "OFF"}`, 30, 105);
+
+  pop();
+
+  camera.on();
 }
 
 function drawOutlinedTextToGfx(g, str, x, y, fillHex) {
@@ -595,6 +654,8 @@ function rescueLeaf(player, leaf) {
 
 // --- DAMAGE FROM FIRE ---
 function takeDamageFromFire(player, fire) {
+  if (debugOptions.invincible) return;
+
   if (invulnTimer > 0 || dead) return;
 
   health = max(0, health - 1);
@@ -614,6 +675,8 @@ function takeDamageFromFire(player, fire) {
 
 // --- BOAR: HIT PLAYER ---
 function playerHitByBoar(player, e) {
+  if (debugOptions.invincible) return;
+
   if (e.dying || e.dead) return;
   if (invulnTimer > 0 || dead) return;
 
@@ -819,10 +882,10 @@ function attachBoarProbes(e) {
   e.groundProbe.collider = "none";
   e.groundProbe.sensor = true;
 
-  // keep them on/off consistently
-  e.footProbe.visible = false;
-  e.frontProbe.visible = false;
-  e.groundProbe.visible = false;
+  // NEW (dynamic debug visibility)
+  e.footProbe.visible = debugOptions.showProbes;
+  e.frontProbe.visible = debugOptions.showProbes;
+  e.groundProbe.visible = debugOptions.showProbes;
 
   // make sure probes always render on top of tiles
   e.footProbe.layer = 999;
