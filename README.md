@@ -8,6 +8,8 @@ Forest Rescue Platformer
 
 This project is a 2D platformer game where the player explores a forest environment, collects items, and avoids enemies. The objective of the game is to collect all melon items in the level while avoiding fire hazards and enemy. The game includes animated sprites, sound effects, background music, and a HUD that displays the player’s score and health.
 
+In addition, the game includes a debug mode that allows developers to visualize game systems such as collision areas and enemy detection logic, making it easier to test and refine gameplay mechanics.
+
 ---
 
 ## Interaction Instructions
@@ -21,6 +23,14 @@ To play the game:
 - Collect **melon items** to increase your score
 - Avoid **fire hazards** and **enemy frog**
 - When the player loses all health or wins the game, press **R** to restart
+
+Debug Mode (Developer Tools):
+
+- Press **TAB** to toggle the debug menu
+- Press **1** to show/hide enemy detection probes
+- Press **2** to show/hide collision boxes
+- Press **3** to toggle invincibility
+- Press **4** to trigger a temporary win state
 
 ---
 

@@ -576,21 +576,39 @@ function drawBitmapTextToGfx(g, str, x, y, scale = FONT_SCALE) {
 function drawDebugMenu() {
   camera.off();
 
-  push();
-  noStroke();
-  fill(0, 180);
-  rect(20, 20, 260, 140, 8);
+  const padding = 10;
+  const lineHeight = 15;
 
-  fill("#ffffff");
+  const lines = [
+    "DEBUG MENU",
+    `1. Probes: ${debugOptions.showProbes ? "ON" : "OFF"}`,
+    `2. Colliders: ${debugOptions.showColliders ? "ON" : "OFF"}`,
+    `3. Invincible: ${debugOptions.invincible ? "ON" : "OFF"}`,
+    `4. Force Win: ${debugOptions.forceWin ? "ON" : "OFF"}`,
+  ];
+
   textSize(12);
   textFont("monospace");
 
-  text("DEBUG MENU", 30, 40);
+  // calculate width dynamically
+  let maxWidth = 0;
+  for (let line of lines) {
+    maxWidth = max(maxWidth, textWidth(line));
+  }
 
-  text(`1. Probes: ${debugOptions.showProbes ? "ON" : "OFF"}`, 30, 60);
-  text(`2. Colliders: ${debugOptions.showColliders ? "ON" : "OFF"}`, 30, 75);
-  text(`3. Invincible: ${debugOptions.invincible ? "ON" : "OFF"}`, 30, 90);
-  text(`4. Force Win: ${debugOptions.forceWin ? "ON" : "OFF"}`, 30, 105);
+  const boxW = maxWidth + padding * 2;
+  const boxH = lines.length * lineHeight + padding * 2;
+
+  push();
+  noStroke();
+  fill(0, 180);
+  rect(20, 20, boxW, boxH, 8);
+
+  fill("#ffffff");
+
+  for (let i = 0; i < lines.length; i++) {
+    text(lines[i], 20 + padding, 20 + padding + i * lineHeight);
+  }
 
   pop();
 
